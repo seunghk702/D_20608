@@ -30,18 +30,27 @@ def fetch_box_office_data(api_key, target_date):
     except Exception as e:
         return None
 
-# 전날 대비 순위 증감(rankInten)에 따라 화살표 및 아이콘 생성 함수
+# 전날 대비 순위 증감(rankInten)에 따라 기호 생성 함수 (색상은 Pandas Style로 처리)
 def format_rank_change(inten):
     try:
         val = int(inten)
         if val > 0:
-            return f":red[▲ {val}]"  # 순위 상승 (빨간 위 화살표)
+            return f"▲ {val}"  # 순위 상승
         elif val < 0:
-            return f":blue[▼ {abs(val)}]"  # 순위 하락 (파란 아래 화살표)
+            return f"▼ {abs(val)}"  # 순위 하락
         else:
             return "-"  # 변동 없음
     except ValueError:
         return "-"
+
+# '전날 대비' 컬럼에 상승(▲)은 빨간색, 하락(▼)은 파란색을 적용하는 함수
+def color_rank_change(val):
+    val_str = str(val)
+    if "▲" in val_str:
+        return "color: red; font-weight: bold;"
+    elif "▼" in val_str:
+        return "color: blue; font-weight: bold;"
+    return ""
 
 def main():
     st.title("🎬 일별 박스오피스 순위")
@@ -149,9 +158,12 @@ def main():
     display_df = df[["rank", "rank_change", "display_name", "openDt", "audiCnt", "audiAcc", "scrnCnt"]].copy()
     display_df.columns = ["순위", "전날 대비", "영화명", "개봉일", "일일 관객수", "누적 관객수", "스크린수"]
 
+    # Pandas Styler를 적용하여 '전날 대비' 컬럼에 글자 색상 지정
+    styled_df = display_df.style.map(color_rank_change, subset=["전날 대비"])
+
     # 표 형태로 출력 (숫자 세 자릿수 콤마 서식 적용)
     st.dataframe(
-        display_df,
+        styled_df,
         use_container_width=True,
         hide_index=True,
         column_config={
