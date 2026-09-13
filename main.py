@@ -30,7 +30,7 @@ def load_data():
 df = load_data()
 
 st.title("🎬 KOBIS 박스오피스 데이터 분석 대시보드")
-st.write("영화별 일별 관객수 변화와 흐름을 확인하는 앱입니다.")
+st.write("영화별 일별 관객수 및 누적 관객수 변화 추이를 확인하는 앱입니다.")
 st.markdown("---")
 
 
@@ -43,40 +43,60 @@ movie_order = (
     .index.tolist()
 )
 
-# 사이드바 또는 메인 화면에서 선택할 수 있도록 드롭다운(select box)을 만듭니다.
+# 셀렉트박스로 분석할 영화를 선택합니다.
 selected_movie = st.selectbox("분석할 영화를 선택하세요:", movie_order)
 
 # 사용자가 선택한 영화의 데이터만 필터링합니다.
 filtered_df = df[df["영화명"] == selected_movie]
 
 
-# [5. 구역 나누기]
-# 추후 다른 그래프를 계속 추가할 수 있도록 구역(Container/Header)을 분리합니다.
+# ---------------------------------------------------------
+# [구역 1: 일별 관객수 추이 - 선그래프]
+# ---------------------------------------------------------
 st.subheader(f"📌 구역 1: {selected_movie} - 일별 관객수 추이")
 
-# [4. 선그래프 그리기]
-# 선택된 영화의 '기준일자'별 '해당일관객수' 선 그래프 생성 (Plotly 사용)
+# 선택된 영화의 '기준일자'별 '해당일관객수' 선 그래프 생성
 fig1 = px.line(
     filtered_df,
     x="기준일자",
     y="해당일관객수",
     title=f"[{selected_movie}] 일자별 관객수 변화",
     labels={"기준일자": "날짜", "해당일관객수": "해당일 관객수(명)"},
-    markers=True,  # 데이터 지점에 점 표시
+    markers=True,
 )
-
-# 그래프 레이아웃 커스텀
 fig1.update_layout(hovermode="x unified")
-
-# Streamlit 화면에 그래프 출력
 st.plotly_chart(fig1, use_container_width=True)
 
-# [5. 그래프 하단 설명 란]
-st.info("💡 **이 그래프로 알 수 있는 것:** " f"{selected_movie}의 개봉 초기 관객 집중도와 흥행 유효 기간을 파악할 수 있습니다.")
+st.info(
+    "💡 **이 그래프로 알 수 있는 것:** "
+    f"{selected_movie}의 개봉 초기 관객 집중도와 일자별 흥행 유효 기간을 파악할 수 있습니다."
+)
 
 st.markdown("---")
 
-# 추후 새로운 그래프를 추가할 자리를 미리 배치해 둡니다.
-st.subheader("📌 구역 2: (추가 예정 구역)")
-st.write("이곳에 추후 새로운 시각화 그래프를 추가할 예정입니다.")
-st.info("💡 **이 그래프로 알 수 있는 것:** (추후 작성 예정)")
+
+# ---------------------------------------------------------
+# [구역 2: 누적 관객수 성장 추이 - 영역차트]
+# ---------------------------------------------------------
+st.subheader(f"📌 구역 2: {selected_movie} - 누적 관객수 성장 추이")
+
+# 선택된 영화의 '기준일자'별 '누적관객수' 영역 차트(Area Chart) 생성
+fig2 = px.area(
+    filtered_df,
+    x="기준일자",
+    y="누적관객수",
+    title=f"[{selected_movie}] 일자별 누적 관객수 추이",
+    labels={"기준일자": "날짜", "누적관객수": "누적 관객수(명)"},
+)
+
+# 그래프 선 및 영역의 투명도/스타일 커스텀
+fig2.update_layout(hovermode="x unified")
+
+# Streamlit 화면에 그래프 출력
+st.plotly_chart(fig2, use_container_width=True)
+
+# 그래프 하단 설명 란
+st.info(
+    "💡 **이 그래프로 알 수 있는 것:** "
+    f"시간 경과에 따른 {selected_movie}의 총 누적 관객수 누적 완만도와 최종 흥행 규모를 확인할 수 있습니다."
+)
