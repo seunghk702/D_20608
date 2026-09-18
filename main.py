@@ -90,6 +90,41 @@ try:
     
     st.markdown("---")
 
+    # ----------------------------------------------------
+    # 세 번째 그래프: 총 관객 수 히스토그램
+    # ----------------------------------------------------
+    st.subheader("3. 총 관객 수(total_audi) 분포")
+    
+    # 히스토그램 생성
+    fig_hist = px.histogram(
+        df,
+        x='total_audi',
+        nbins=30,
+        title='총 관객 수 히스토그램',
+        labels={'total_audi': '총 관객 수 (명)'},
+        color_discrete_sequence=['#636EFA']
+    )
+    fig_hist.update_layout(
+        yaxis_title="영화 수 (편)",
+        margin=dict(t=50, b=20, l=20, r=20)
+    )
+    fig_hist.update_traces(
+        hovertemplate='<b>관객 수 구간:</b> %{x:,.0f}명<br><b>영화 수:</b> %{y}편<extra></extra>'
+    )
+    
+    # 그래프 출력
+    st.plotly_chart(fig_hist, use_container_width=True)
+    
+    # 분석 데이터 동적 계산 (가장 관객 수가 많은 영화 정보)
+    top_movie = df.loc[df['total_audi'].idxmax()]
+    top_movie_title = top_movie['movieNm']
+    top_movie_audi = top_movie['total_audi']
+    
+    # 이 그래프로 알 수 있는 것 구역
+    st.info(f"💡 **이 그래프로 알 수 있는 것:** 대부분의 영화가 상대적으로 적은 관객 수 구간(하위 관객 수 영역)에 집중 분포되어 있으며, 최고 관객 수를 기록한 영화는 **'{top_movie_title}'**({top_movie_audi:,.0f}명)입니다.")
+    
+    st.markdown("---")
+
     # 추가 안내
     st.caption("※ 본 데이터는 1년간 박스오피스 10위권에 든 개봉 영화 216편의 데이터를 기반으로 구성되었습니다.")
 
