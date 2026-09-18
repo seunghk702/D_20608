@@ -19,8 +19,9 @@ def load_data():
     url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_movies.csv"
     df = pd.read_csv(url)
     
-    # genre: 세로막대 기호(|)로 여러 개 적힌 경우 첫 번째 장르만 추출
-    df['genre'] = df['genre'].astype(str).apply(lambda x: x.split('|')[0].strip() if x and x != 'nan' else '기타')
+    # genre: 결측치 처리 후 첫 번째 장르만 추출
+    df['genre'] = df['genre'].fillna('기타').astype(str)
+    df['genre'] = df['genre'].apply(lambda x: x.split('|')[0].strip() if x.strip() != '' else '기타')
     
     return df
 
