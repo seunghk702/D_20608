@@ -125,6 +125,38 @@ try:
     
     st.markdown("---")
 
+    # ----------------------------------------------------
+    # 네 번째 그래프: 개봉일 스크린 수와 총 관객 수 산점도
+    # ----------------------------------------------------
+    st.subheader("4. 개봉일 스크린 수와 총 관객 수의 관계")
+    
+    # Plotly Scatter Plot 생성
+    fig_scatter = px.scatter(
+        df,
+        x='first_scrn',
+        y='total_audi',
+        color='genre',
+        hover_name='movieNm',
+        title='개봉일 스크린 수(first_scrn) vs 총 관객 수(total_audi)',
+        labels={
+            'first_scrn': '개봉일 스크린 수 (개)',
+            'total_audi': '총 관객 수 (명)',
+            'genre': '장르'
+        }
+    )
+    fig_scatter.update_traces(
+        hovertemplate='<b>%{hovertext}</b><br>개봉일 스크린 수: %{x:,.0f}개<br>총 관객 수: %{y:,.0f}명<extra></extra>'
+    )
+    fig_scatter.update_layout(margin=dict(t=50, b=20, l=20, r=20))
+    
+    # 그래프 출력
+    st.plotly_chart(fig_scatter, use_container_width=True)
+    
+    # 이 그래프로 알 수 있는 것 구역
+    st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린 수가 많을수록 총 관객 수도 대체로 증가하는 양의 상관관계를 보이며, 장르별로 스크린 확보 수준과 흥행 성과의 분포 양상을 비교해볼 수 있습니다.")
+    
+    st.markdown("---")
+
     # 추가 안내
     st.caption("※ 본 데이터는 1년간 박스오피스 10위권에 든 개봉 영화 216편의 데이터를 기반으로 구성되었습니다.")
 
