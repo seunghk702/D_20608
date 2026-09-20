@@ -23,6 +23,9 @@ def load_data():
     df['genre'] = df['genre'].fillna('기타').astype(str)
     df['genre'] = df['genre'].apply(lambda x: x.split('|')[0].strip() if x.strip() != '' else '기타')
     
+    # nation: 결측치 처리
+    df['nation'] = df['nation'].fillna('기타').astype(str)
+    
     return df
 
 try:
@@ -230,6 +233,35 @@ try:
     # 이 그래프로 알 수 있는 것 구역
     st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일 스크린 수와 총 관객 수뿐만 아니라, 점의 크기를 통해 개봉 첫 주 관객 수의 비중을 함께 파악하여 초반 흥행 몰이와 장기 흥행 여부의 관계를 복합적으로 파악할 수 있습니다.")
     
+    st.markdown("---")
+
+    # ----------------------------------------------------
+    # 일곱 번째 그래프: 제작 국가 -> 장르 선버스트 차트 (크기: 영화 편수)
+    # ----------------------------------------------------
+    st.subheader("7. 제작 국가 및 장르별 영화 편수 분포 (선버스트 차트)")
+    
+    # 제작 국가(nation) -> 장르(genre) 그룹별 영화 편수 집계
+    nation_genre_df = df.groupby(['nation', 'genre']).size().reset_index(name='count')
+    
+    # Plotly Sunburst Chart 생성
+    fig_sunburst = px.sunburst(
+        nation_genre_df,
+        path=['nation', 'genre'],
+        values='count',
+        color='nation',
+        title='제작 국가 및 장르 계층별 영화 편수 분포'
+    )
+    fig_sunburst.update_traces(
+        hovertemplate='<b>%{label}</b><br>영화 편수: %{value}편<br>비율: %{percentParent:.1%}<extra></extra>'
+    )
+    fig_sunburst.update_layout(margin=dict(t=50, b=20, l=20, r=20))
+    
+    # 그래프 출력
+    st.plotly_chart(fig_sunburst, use_container_width=True)
+    
+    # 이 그래프로 알 수 있는 것 구역
+    st.info("💡 **이 그래프로 알 수 있는 것:** 각 제작 국가(안쪽 원)별로 개봉 영화 편수 비중을 파악하고, 각 국가 내에서 어떤 장르(바깥쪽 원)의 영화가 주를 이루는지 계층 구조로 시각적으로 파악할 수 있습니다.")
+
     st.markdown("---")
 
     # 추가 안내
