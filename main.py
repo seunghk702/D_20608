@@ -265,34 +265,34 @@ try:
     st.markdown("---")
 
     # ----------------------------------------------------
-    # 여덟 번째 그래프: 10위권 체류 일수와 총 관객 수 산점도
+    # 여덟 번째 그래프: 개봉일 스크린 수와 총 관객 수 산점도 (질문 기반)
     # ----------------------------------------------------
-    st.subheader("8. 10위권에 오래 머문 영화는 총 관객도 많은가")
+    st.subheader("8. 개봉일 스크린 수가 많은 영화는 총 관객도 많은가?")
     
     # Plotly Scatter Plot 생성
-    fig_top10_scatter = px.scatter(
+    fig_scrn_scatter = px.scatter(
         df,
-        x='days_in_top10',
+        x='first_scrn',
         y='total_audi',
         color='genre',
         hover_name='movieNm',
-        title='10위권에 오래 머문 영화는 총 관객도 많은가',
+        title='개봉일 스크린 수가 많은 영화는 총 관객도 많은가?',
         labels={
-            'days_in_top10': '10위권 체류 일수 (일)',
+            'first_scrn': '개봉일 스크린 수 (개)',
             'total_audi': '총 관객 수 (명)',
             'genre': '장르'
         }
     )
-    fig_top10_scatter.update_traces(
-        hovertemplate='<b>%{hovertext}</b><br>10위권 체류 일수: %{x}일<br>총 관객 수: %{y:,.0f}명<extra></extra>'
+    fig_scrn_scatter.update_traces(
+        hovertemplate='<b>%{hovertext}</b><br>개봉일 스크린 수: %{x:,.0f}개<br>총 관객 수: %{y:,.0f}명<extra></extra>'
     )
-    fig_top10_scatter.update_layout(margin=dict(t=50, b=20, l=20, r=20))
+    fig_scrn_scatter.update_layout(margin=dict(t=50, b=20, l=20, r=20))
     
     # 그래프 출력
-    st.plotly_chart(fig_top10_scatter, use_container_width=True)
+    st.plotly_chart(fig_scrn_scatter, use_container_width=True)
     
     # 이 그래프로 알 수 있는 것 구역
-    st.info("💡 **이 그래프로 알 수 있는 것:** 박스오피스 TOP 10에 유지된 기간이 길수록 누적 관객 수가 증가하는 뚜렷한 양의 상관관계를 확인해 볼 수 있으며, 장기 흥행에 성공한 대표적인 영화들을 찾을 수 있습니다.")
+    st.info("💡 **이 그래프로 알 수 있는 것:** 개봉일에 확보한 스크린 수가 많을수록 초기 관객 확보가 용이하여 최종 총 관객 수 역시 높아지는 양의 상관관계를 한눈에 확인할 수 있습니다.")
 
     st.markdown("---")
 
