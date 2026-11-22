@@ -51,8 +51,8 @@ if st.button("적정 가격 예측하기 🔍"):
     aspect_ratio = x_val / y_val if y_val != 0 else 1.0
     density_proxy = (x_val * y_val * z_val) / carat if carat != 0 else 0.0
 
-    # 입력 데이터를 데이터프레임으로 만들고 0으로 초기화
-    input_data = pd.DataFrame(0, index=[0], columns=feature_columns)
+    # 입력 데이터를 데이터프레임으로 만들고 0.0(실수형)으로 초기화하여 타입 에러 방지
+    input_data = pd.DataFrame(0.0, index=[0], columns=feature_columns)
     
     # 수치형 변수 채우기
     input_data.loc[0, 'log_carat'] = log_carat
@@ -62,9 +62,9 @@ if st.button("적정 가격 예측하기 🔍"):
     input_data.loc[0, 'density_proxy'] = density_proxy
 
     # 범주형 변수(원핫 인코딩) 채우기 (해당 등급만 1로 변경)
-    if f'cut_{cut}' in feature_columns: input_data.loc[0, f'cut_{cut}'] = 1
-    if f'color_{color}' in feature_columns: input_data.loc[0, f'color_{color}'] = 1
-    if f'clarity_{clarity}' in feature_columns: input_data.loc[0, f'clarity_{clarity}'] = 1
+    if f'cut_{cut}' in feature_columns: input_data.loc[0, f'cut_{cut}'] = 1.0
+    if f'color_{color}' in feature_columns: input_data.loc[0, f'color_{color}'] = 1.0
+    if f'clarity_{clarity}' in feature_columns: input_data.loc[0, f'clarity_{clarity}'] = 1.0
 
     # 4. 모델 예측 및 잔차 보정 계수를 적용한 달러($) 환산
     pred_log = model.predict(input_data)[0]
