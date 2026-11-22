@@ -1,25 +1,30 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import joblib
+from sklearn.linear_model import LinearRegression
 
-# 1. 모델과 보정 계수 불러오기 (캐싱을 통해 구동 속도 향상)
+# 1. CSV 데이터로 실시간 모델 학습 (캐싱을 통해 최초 1회만 빠르게 실행)
 @st.cache_resource
-def load_model():
-    return joblib.load('diamond_model.pkl')
+def train_model():
+    # 깃허브에 업로드된 학습 데이터 불러오기
+    df = pd.read_csv('diamonds_train.csv')
+    
+    # 피처(X)와 타겟(y) 분리
+    X = df.drop(columns=['price', 'log_price'])
+    y_log = df['log_price']
+    
+    # 실시간 선형회귀 모델 학습
+    model = LinearRegression()
+    model.fit(X, y_log)
+    
+    # 잔차 보정 계수(Smearing Factor) 자동 계산
+    train_residuals = y_log - model.predict(X)
+    smearing_factor = np.mean(np.exp(train_residuals))
+    
+    return model, smearing_factor, X.columns.tolist()
 
-model_data = load_model()
-model = model_data['model']
-smearing_factor = model_data['smearing_factor']
-
-# 학습 시 사용했던 피처(컬럼) 목록의 순서 고정
-feature_columns = [
-    'log_carat', 'aspect_ratio', 'clarity_IF', 'clarity_VVS1', 'clarity_VVS2', 
-    'clarity_VS1', 'clarity_VS2', 'clarity_SI1', 'color_D', 'color_E', 
-    'clarity_SI2', 'color_F', 'color_G', 'color_H', 'cut_Ideal', 
-    'cut_Premium', 'cut_Very Good', 'color_I', 'cut_Good', 'table', 
-    'depth', 'density_proxy'
-]
+# 학습된 모델 객체, 보정 계수, 피처 컬럼 목록 받아오기
+model, smearing_factor, feature_columns = train_model()
 
 # 2. 웹앱 화면 구성
 st.title("💎 다이아몬드 가격 예측 앱")
