@@ -42,8 +42,6 @@ z_val = st.sidebar.number_input("깊이 (z, mm)", value=4.0)
 
 # 3. 예측 버튼 클릭 시 동작
 if st.button("적정 가격 예측하기 🔍"):
-    # 파생 변수 계산 (밀도 공식 정상화: 중량 / 부피)
+    # 파생 변수 계산 (밀도 공식 정상화 및 구문 오류 수정)
     log_carat = np.log(carat)
-    aspect_ratio = x_val / y_val if y_val != 0 else 1.0
-    volume = x_val * y_val * z_val
-    density_proxy = carat / volume if volume != 0
+    aspect_ratio = x_val /
