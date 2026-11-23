@@ -32,6 +32,7 @@ cut = st.sidebar.selectbox("컷팅 (Cut)", ['Ideal', 'Premium', 'Very Good', 'Go
 color = st.sidebar.selectbox("색상 (Color)", ['D', 'E', 'F', 'G', 'H', 'I', 'J'])
 clarity = st.sidebar.selectbox("투명도 (Clarity)", ['IF', 'VVS1', 'VVS2', 'VS1', 'VS2', 'SI1', 'SI2', 'I1'])
 
+# Depth, Table 슬라이더 원상 복구
 st.sidebar.subheader("세부 비율 (옵션)")
 depth = st.sidebar.slider("Depth (%)", 50.0, 70.0, 61.7)
 table = st.sidebar.slider("Table (%)", 40.0, 70.0, 57.0)
@@ -45,25 +46,4 @@ if st.button("적정 가격 예측하기 🔍"):
     log_carat = np.log(carat)
     aspect_ratio = x_val / y_val if y_val != 0 else 1.0
     volume = x_val * y_val * z_val
-    density_proxy = carat / volume if volume != 0 else 0.0
-
-    # 입력 데이터 초기화
-    input_data = pd.DataFrame(0.0, index=[0], columns=feature_columns)
-    
-    # 수치형 변수 채우기
-    input_data.loc[0, 'log_carat'] = log_carat
-    input_data.loc[0, 'aspect_ratio'] = aspect_ratio
-    input_data.loc[0, 'depth'] = depth
-    input_data.loc[0, 'table'] = table
-    input_data.loc[0, 'density_proxy'] = density_proxy
-
-    # 범주형 변수 채우기
-    if f'cut_{cut}' in feature_columns: input_data.loc[0, f'cut_{cut}'] = 1.0
-    if f'color_{color}' in feature_columns: input_data.loc[0, f'color_{color}'] = 1.0
-    if f'clarity_{clarity}' in feature_columns: input_data.loc[0, f'clarity_{clarity}'] = 1.0
-
-    # 4. 가격 예측 및 출력
-    pred_log = model.predict(input_data)[0]
-    final_price = np.expm1(pred_log) * smearing_factor
-
-    st.success(f"### 예측된 가격은 약 **${final_price:,.2f}** 입니다!")
+    density_proxy = carat / volume if volume != 0
